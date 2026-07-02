@@ -4,7 +4,7 @@ import { api, clearStoredPincode, getStoredPincode, setStoredPincode } from './a
 import { disablePush, enablePush, getPushState } from './push';
 import { UI } from './i18n';
 
-const TAB_ORDER = ['voorstellingen', 'contact', 'wieiswie', 'playtimes', 'rehearsals', 'contracts', 'safety'];
+const TAB_ORDER = ['voorstellingen', 'contact', 'wieiswie', 'playtimes', 'rehearsals', 'contracts', 'notulen', 'infosheet', 'safety'];
 
 export default function App() {
     const [lang, setLang] = useState(() => localStorage.getItem('ctfhoreca_lang') || 'nl');
@@ -84,6 +84,8 @@ export default function App() {
                         {activeTab === 'playtimes' && <PlaytimesTab playtimes={bundle.playtimes} lang={lang} t={t} />}
                         {activeTab === 'rehearsals' && <RehearsalsTab rehearsals={bundle.rehearsals} lang={lang} t={t} />}
                         {activeTab === 'contracts' && <ContractsTab contracts={bundle.contracts} t={t} />}
+                        {activeTab === 'notulen' && <NotulenTab notulen={bundle.notulen} t={t} />}
+                        {activeTab === 'infosheet' && <InfosheetTab infosheet={bundle.infosheet} lang={lang} t={t} />}
                         {activeTab === 'safety' && <SafetyTab veiligheid={bundle.veiligheid} lang={lang} t={t} />}
                     </main>
                 </>
@@ -131,6 +133,8 @@ function TabBar({ tabs, active, onChange, t }) {
         playtimes: t.tab_playtimes,
         rehearsals: t.tab_rehearsals,
         contracts: t.tab_contracts,
+        notulen: t.tab_notulen,
+        infosheet: t.tab_infosheet,
         safety: t.safety,
     };
     return (
@@ -366,6 +370,33 @@ function ContractsTab({ contracts, t }) {
                 </div>
             ))}
         </div>
+    );
+}
+
+function NotulenTab({ notulen, t }) {
+    if (!notulen?.length) return <EmptyState text={t.notulen_none} />;
+    return (
+        <div className="bg-white rounded-xl shadow-sm divide-y">
+            {notulen.map(n => (
+                <a key={n.year} href={n.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between gap-3 p-4 hover:bg-gray-50 transition">
+                    <div className="min-w-0">
+                        <div className="font-medium">{t.notulen_title} {n.year}</div>
+                        <div className="text-sm text-gray-500 truncate">{n.filename}</div>
+                    </div>
+                    <span className="text-sm font-medium text-ctf-primary whitespace-nowrap">{t.contract_open} →</span>
+                </a>
+            ))}
+        </div>
+    );
+}
+
+function InfosheetTab({ infosheet, lang, t }) {
+    const html = infosheet?.[lang] || infosheet?.nl || '';
+    if (!html.trim()) return <EmptyState text={t.infosheet_none} />;
+    return (
+        <article className="bg-white rounded-xl shadow-sm p-6">
+            <div className="ctf-prose" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html, { ADD_TAGS: ['img'], ADD_ATTR: ['style', 'src', 'alt'] }) }} />
+        </article>
     );
 }
 
