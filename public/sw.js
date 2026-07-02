@@ -1,5 +1,10 @@
 /* Service worker voor de CTF Artiest-omgeving: ontvangt web-push en opent de app. */
 
+// Nieuwe versie meteen laten overnemen (anders blijft de oude SW — met het oude
+// badge-icoon — actief tot alle vensters gesloten zijn).
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
+
 self.addEventListener('push', (event) => {
     let data = {};
     try { data = event.data ? event.data.json() : {}; } catch (e) { data = {}; }
