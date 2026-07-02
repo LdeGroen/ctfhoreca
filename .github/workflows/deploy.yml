@@ -25,15 +25,19 @@ jobs:
           CI: false
 
       # SFTP i.p.v. FTPS: één SSH-verbinding, geen los passief datakanaal (dat de
-      # Plesk-server voor deze vhost afknijpt → ECONNRESET). Hergebruikt dezelfde
-      # secrets. Vereist dat SSH/chrooted-shell aan staat voor dit account.
+      # Plesk-server voor deze vhost afknijpt → ECONNRESET). Eigen sftp-batch die
+      # de doelmap eerst aanmaakt (-mkdir negeert 'bestaat al') en dan de build
+      # erin zet. Hergebruikt dezelfde FTP_*-secrets (poort 22).
       - name: Deploy build/ via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-          local_path: './build/*'
-          remote_path: ${{ secrets.FTP_SERVER_DIR }}
-          sftp_only: true
+        env:
+          SFTP_SERVER: ${{ secrets.FTP_SERVER }}
+          SFTP_USER: ${{ secrets.FTP_USERNAME }}
+          SFTP_PASS: ${{ secrets.FTP_PASSWORD }}
+          SFTP_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+          sshpass -p "$SFTP_PASS" sftp -o StrictHostKeyChecking=no -o BatchMode=no -P 22 "$SFTP_USER@$SFTP_SERVER" <<SFTPEOF
+          -mkdir $SFTP_DIR
+          put -r ./build/* $SFTP_DIR
+          bye
+          SFTPEOF
