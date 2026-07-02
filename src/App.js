@@ -4,7 +4,7 @@ import { api, clearStoredPincode, getStoredPincode, setStoredPincode } from './a
 import { disablePush, enablePush, getPushState } from './push';
 import { UI } from './i18n';
 
-const TAB_ORDER = ['voorstellingen', 'contact', 'playtimes', 'rehearsals', 'contracts', 'safety'];
+const TAB_ORDER = ['voorstellingen', 'contact', 'wieiswie', 'playtimes', 'rehearsals', 'contracts', 'safety'];
 
 export default function App() {
     const [lang, setLang] = useState(() => localStorage.getItem('ctfhoreca_lang') || 'nl');
@@ -80,6 +80,7 @@ export default function App() {
                     <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-6">
                         {activeTab === 'voorstellingen' && <VoorstellingenTab items={bundle.voorstellingen} lang={lang} t={t} />}
                         {activeTab === 'contact' && <ContactTab contact={bundle.contact} t={t} />}
+                        {activeTab === 'wieiswie' && <WieIsWieTab teams={bundle.teams} t={t} />}
                         {activeTab === 'playtimes' && <PlaytimesTab playtimes={bundle.playtimes} lang={lang} t={t} />}
                         {activeTab === 'rehearsals' && <RehearsalsTab rehearsals={bundle.rehearsals} lang={lang} t={t} />}
                         {activeTab === 'contracts' && <ContractsTab contracts={bundle.contracts} t={t} />}
@@ -126,6 +127,7 @@ function TabBar({ tabs, active, onChange, t }) {
     const labels = {
         voorstellingen: t.tab_voorstellingen,
         contact: t.tab_contact,
+        wieiswie: t.tab_wieiswie,
         playtimes: t.tab_playtimes,
         rehearsals: t.tab_rehearsals,
         contracts: t.tab_contracts,
@@ -280,6 +282,22 @@ function ContactTab({ contact, t }) {
                     <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">{t.c_company}: {g.company}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {g.contacts.map(p => <PersonCard key={p.id} p={p} />)}
+                    </div>
+                </section>
+            ))}
+        </div>
+    );
+}
+
+function WieIsWieTab({ teams, t }) {
+    if (!teams?.length) return <EmptyState text={t.no_items} />;
+    return (
+        <div className="space-y-6">
+            {teams.map(team => (
+                <section key={team.id}>
+                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">{team.naam}</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {team.members.map(p => <PersonCard key={p.id} p={p} />)}
                     </div>
                 </section>
             ))}
