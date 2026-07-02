@@ -24,21 +24,16 @@ jobs:
         env:
           CI: false
 
-      - name: Deploy build/ via FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      # SFTP i.p.v. FTPS: één SSH-verbinding, geen los passief datakanaal (dat de
+      # Plesk-server voor deze vhost afknijpt → ECONNRESET). Hergebruikt dezelfde
+      # secrets. Vereist dat SSH/chrooted-shell aan staat voor dit account.
+      - name: Deploy build/ via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
-          protocol: ftps
-          security: loose
-          timeout: 60000
-          local-dir: ./build/
-          state-name: .ftp-deploy-sync-state.json
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/src/**
+          port: 22
+          local_path: './build/*'
+          remote_path: ${{ secrets.FTP_SERVER_DIR }}
+          sftp_only: true
