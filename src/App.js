@@ -179,9 +179,9 @@ function LoginScreen({ onLogin, lang, setLang, error }) {
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
-                        maxLength={4}
+                        maxLength={6}
                         value={pin}
-                        onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                        onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
                         placeholder={t.pincode}
                         className="w-full border rounded p-3 text-center text-2xl tracking-[0.5em] font-mono focus:outline-none focus:ring-2 focus:ring-ctf-primary/40"
                         autoFocus
@@ -189,7 +189,7 @@ function LoginScreen({ onLogin, lang, setLang, error }) {
                     {error && <p className="text-sm text-red-600">{error}</p>}
                     <button
                         type="submit"
-                        disabled={busy || pin.length < 4}
+                        disabled={busy || pin.length < 6}
                         className="w-full bg-ctf-primary text-white py-2.5 rounded font-medium hover:bg-ctf-primary/90 disabled:opacity-50"
                     >{t.login}</button>
                 </form>

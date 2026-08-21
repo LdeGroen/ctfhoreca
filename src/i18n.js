@@ -2,7 +2,7 @@ export const UI = {
     nl: {
         title: 'Voor cafés',
         subtitle: 'Café Theater Festival',
-        login_intro: 'Voer de 4-cijferige pincode in die je van het festival hebt gekregen.',
+        login_intro: 'Voer de 6-cijferige pincode in die je van het festival hebt gekregen.',
         tab_voorstellingen: 'Voorstellingen',
         tab_contact: 'Contact',
         tab_wieiswie: 'Wie is wie',
@@ -90,7 +90,7 @@ export const UI = {
     en: {
         title: 'For cafés',
         subtitle: 'Café Theater Festival',
-        login_intro: 'Enter the 4-digit PIN the festival gave you.',
+        login_intro: 'Enter the 6-digit PIN the festival gave you.',
         tab_voorstellingen: 'Performances',
         tab_contact: 'Contact',
         tab_wieiswie: 'Who is who',
