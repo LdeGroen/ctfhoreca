@@ -4,7 +4,10 @@ import { api, clearStoredPincode, getStoredPincode, setStoredPincode } from './a
 import { disablePush, enablePush, getPushState } from './push';
 import { UI } from './i18n';
 
-const TAB_ORDER = ['voorstellingen', 'contact', 'wieiswie', 'playtimes', 'rehearsals', 'contracts', 'notulen', 'infosheet', 'safety'];
+// 'rehearsals' staat sinds 10-11-2026 niet meer in de rij: cafés zien voorlopig
+// geen repetities (de backend stuurt ook een lege lijst). Terugzetten = hier
+// weer tussen 'playtimes' en 'contracts'.
+const TAB_ORDER = ['voorstellingen', 'contact', 'wieiswie', 'playtimes', 'contracts', 'notulen', 'infosheet', 'safety'];
 
 export default function App() {
     const [lang, setLang] = useState(() => localStorage.getItem('ctfhoreca_lang') || 'nl');
