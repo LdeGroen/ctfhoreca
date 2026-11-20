@@ -27,5 +27,5 @@ REACT_APP_API_URL=https://backend.cafetheaterfestival.nl
 
 ## Deploy
 
-Push naar `main` → GitHub Action `deploy.yml` doet FTPS-deploy naar Plesk.
-Secrets: `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR`.
+Push naar `main` → GitHub Action `deploy.yml` bouwt en zet de build met rsync over SSH op de Hetzner-server.
+Secrets: `NIEUWE_SERVER_KEY`, `NIEUWE_SERVER_USER`, `NIEUWE_SERVER_PAD`. (De FTPS-deploy naar Plesk is weg.)
