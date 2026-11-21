@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import DOMPurify from 'dompurify';
-import { api, clearStoredPincode, getStoredPincode, setStoredPincode } from './api';
+import { api, PINCODE_WEG, clearStoredPincode, getStoredPincode, setStoredPincode } from './api';
 import { disablePush, enablePush, getPushState } from './push';
 import { UI } from './i18n';
 
@@ -54,11 +54,22 @@ export default function App() {
         }
     };
 
-    const handleLogout = () => {
-        clearStoredPincode();
+    // Terug naar het inlogscherm; de pincode is dan al gewist.
+    const naarInloggen = () => {
         setLoggedIn(false);
         setBundle(null);
     };
+    const handleLogout = () => {
+        // Het push-abonnement van dit apparaat opzeggen zolang de pincode nog
+        // geldt; anders blijft een uitgelogd apparaat meldingen krijgen
+        // (audit POR-10). Pas daarna de pincode wissen.
+        disablePush().catch(() => {}).finally(clearStoredPincode);
+        naarInloggen();
+    };
+    useEffect(() => {
+        window.addEventListener(PINCODE_WEG, naarInloggen);
+        return () => window.removeEventListener(PINCODE_WEG, naarInloggen);
+    }, []);
 
     if (!loggedIn) {
         return (
