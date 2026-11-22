@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import DOMPurify from 'dompurify';
-import { api, PINCODE_WEG, clearStoredPincode, getStoredPincode, setStoredPincode } from './api';
+import { api, PINCODE_WEG, isIngelogd, bewaarSessie, vergeetSessie } from './api';
 import { disablePush, enablePush, getPushState } from './push';
 import { UI } from './i18n';
 
@@ -11,7 +11,7 @@ const TAB_ORDER = ['voorstellingen', 'contact', 'wieiswie', 'playtimes', 'contra
 
 export default function App() {
     const [lang, setLang] = useState(() => localStorage.getItem('ctfhoreca_lang') || 'nl');
-    const [loggedIn, setLoggedIn] = useState(() => !!getStoredPincode());
+    const [loggedIn, setLoggedIn] = useState(() => isIngelogd());
     const [bundle, setBundle] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -28,7 +28,7 @@ export default function App() {
             setBundle(data);
         } catch (e) {
             if (e.status === 401 || e.status === 403) {
-                clearStoredPincode();
+                vergeetSessie();
                 setLoggedIn(false);
                 setBundle(null);
             } else {
@@ -44,11 +44,11 @@ export default function App() {
     const handleLogin = async (pincode) => {
         setError('');
         try {
-            setStoredPincode(pincode);
-            await api.login(pincode);
+            const r = await api.login(pincode);
+            bewaarSessie(r.sessie);
             setLoggedIn(true);
         } catch (e) {
-            clearStoredPincode();
+            vergeetSessie();
             setError(t.login_failed);
             throw e;
         }
@@ -63,7 +63,8 @@ export default function App() {
         // Het push-abonnement van dit apparaat opzeggen zolang de pincode nog
         // geldt; anders blijft een uitgelogd apparaat meldingen krijgen
         // (audit POR-10). Pas daarna de pincode wissen.
-        disablePush().catch(() => {}).finally(clearStoredPincode);
+        // Daarna het sessietoken bij de backend intrekken en pas dan vergeten.
+        disablePush().catch(() => {}).finally(() => api.logout().catch(() => {}).finally(vergeetSessie));
         naarInloggen();
     };
     useEffect(() => {
